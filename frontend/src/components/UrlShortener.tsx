@@ -12,8 +12,10 @@ const UrlShortener: React.FC = () => {
     setShortUrl('');
 
     try {
+        console.log(process.env, 'process.env.REACT_APP_API_URL')
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shorten`, { url: originalUrl });
       setShortUrl(response.data.shortUrl);
+      console.log(response, 'response')
     } catch (err: any) {
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
