@@ -1,0 +1,27 @@
+version: '3'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5500:5500"
+    environment:
+      - PORT=5500
+      - DATABASE_URL=postgres://ufnfau5kv8ccm3:p39d7670325961b3feab6a4415c077cde83592afb990040527268653c8727b9a8@c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dfi6nf6t17nqr5
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5500
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: youruser
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: yourdb
+    ports:
+      - "5432:5432"

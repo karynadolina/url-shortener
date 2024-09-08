@@ -1,5 +1,39 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  max-width: 500px;
+  margin: 50px auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  font-size: 16px;
+`;
+
+const Button = styled.button`
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+const Result = styled.div`
+  margin-top: 20px;
+`;
+
+const ErrorMessage = styled.p`
+  color: red;
+  margin-top: 20px;
+`;
 
 const UrlShortener: React.FC = () => {
   const [originalUrl, setOriginalUrl] = useState('');
@@ -12,72 +46,38 @@ const UrlShortener: React.FC = () => {
     setShortUrl('');
 
     try {
-        console.log(process.env, 'process.env.REACT_APP_API_URL')
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/shorten`, { url: originalUrl });
       setShortUrl(response.data.shortUrl);
-      console.log(response, 'response')
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
-      } else {
-        setError('An error occurred');
-      }
+      const errorMsg = err?.response?.data?.error || 'An error occurred';
+      setError(errorMsg);
     }
   };
 
   return (
-    <div style={styles.container}>
+    <Container>
       <h1>URL Shortener</h1>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <input
+      <Form onSubmit={handleSubmit}>
+        <Input
           type="text"
           value={originalUrl}
           onChange={(e) => setOriginalUrl(e.target.value)}
           placeholder="Enter your URL"
-          style={styles.input}
           required
         />
-        <button type="submit" style={styles.button}>Shorten</button>
-      </form>
+        <Button type="submit">Shorten</Button>
+      </Form>
       {shortUrl && (
-        <div style={styles.result}>
+        <Result>
           <p>Short URL:</p>
-          <a href={shortUrl} target="_blank" rel="noopener noreferrer">{shortUrl}</a>
-        </div>
+          <a href={shortUrl} target="_blank" rel="noopener noreferrer">
+            {shortUrl}
+          </a>
+        </Result>
       )}
-      {error && <p style={styles.error}>{error}</p>}
-    </div>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </Container>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    maxWidth: '500px',
-    margin: '50px auto',
-    textAlign: 'center',
-    fontFamily: 'Arial, sans-serif'
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column' as 'column',
-    gap: '10px'
-  },
-  input: {
-    padding: '10px',
-    fontSize: '16px'
-  },
-  button: {
-    padding: '10px',
-    fontSize: '16px',
-    cursor: 'pointer'
-  },
-  result: {
-    marginTop: '20px'
-  },
-  error: {
-    color: 'red',
-    marginTop: '20px'
-  }
 };
 
 export default UrlShortener;
