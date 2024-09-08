@@ -6,13 +6,7 @@ import cors from 'cors';
 const app = express();
 const PORT = process.env.PORT || 5500;
 
-const corsOptions = {
-    origin: ['http://localhost:3001', 'https://url-shortener-sooty-nu-10.vercel.app'],
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-
+app.use(cors());
 app.use(express.json());
 
 dbPromise.then(db => {
@@ -27,7 +21,7 @@ dbPromise.then(db => {
     console.error('Failed to initialize database', err);
 });
 
-app.use(routes);
+app.use('/', routes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

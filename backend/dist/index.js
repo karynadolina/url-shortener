@@ -10,10 +10,11 @@ const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5500;
 const corsOptions = {
-    origin: ['http://localhost:3001', 'https://url-shortener-sooty-nu-10.vercel.app'],
+    origin: ['http://localhost:3001', 'url-shortener-eight-self.vercel.app'],
     optionsSuccessStatus: 200
 };
-app.use((0, cors_1.default)(corsOptions));
+// app.use(cors(corsOptions));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 database_1.default.then(db => {
     db.run(`

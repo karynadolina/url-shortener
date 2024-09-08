@@ -11,9 +11,12 @@ router.use(express.json());
 router.post('/api/shorten', async (req: Request, res: Response) => {
     const { url } = req.body;
 
-    const urlPattern = new RegExp('^(https?:\\/\\/)?' +
-        '((([a-zA-Z0-9\\-])+\\.)+[a-zA-Z]{2,})' + 
-        '(\\/[a-zA-Z0-9\\-._~:/?#[\\]@!$&\'()*+,;=]*)?$', 'i');
+    const baseUrl = process.env.BASE_URL || 'http://localhost:5500';
+
+    const urlPattern = new RegExp('^(https?:\\/\\/)' +
+    '([\\da-z.-]+)\\.([a-z.]{2,6})' +
+    '(\\/.*)?$', 'i');
+  
 
     if (!url || !urlPattern.test(url)) {
         return res.status(400).json({ error: 'Invalid URL' });
@@ -23,14 +26,14 @@ router.post('/api/shorten', async (req: Request, res: Response) => {
 
     const existing = await db.get('SELECT * FROM urls WHERE original_url = ?', url);
     if (existing) {
-        return res.json({ shortUrl: `http://localhost:5000/${existing.short_id}` });
+        return res.json({ shortUrl: `${baseUrl}/${existing.short_id}` });
     }
 
     const shortId = shortid.generate();
 
     await db.run('INSERT INTO urls (original_url, short_id) VALUES (?, ?)', url, shortId);
 
-    res.json({ shortUrl: `http://localhost:5000/${shortId}` });
+    res.json({ shortUrl: `${baseUrl}/${shortId}` });
 });
 
 router.get('/:shortId', async (req: Request, res: Response) => {
