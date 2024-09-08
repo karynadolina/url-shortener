@@ -47,7 +47,7 @@ router.get('/:shortId', (req, res) => __awaiter(void 0, void 0, void 0, function
     try {
         const record = yield database_1.default.query('SELECT original_url FROM urls WHERE short_id = $1', [shortId]);
         if (record.rows.length > 0) {
-            res.redirect(record.rows[0].original_url);
+            res.json({ original_url: record.rows[0].original_url });
         }
         else {
             res.status(404).send('Not found');
