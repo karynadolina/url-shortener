@@ -5,29 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const routes_1 = __importDefault(require("./routes"));
-const database_1 = __importDefault(require("./database"));
+const database_1 = require("./database");
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 5500;
-const corsOptions = {
-    origin: ['http://localhost:3001', 'url-shortener-eight-self.vercel.app'],
-    optionsSuccessStatus: 200
-};
-// app.use(cors(corsOptions));
+const PORT = process.env.PORT || 5002;
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-database_1.default.then(db => {
-    db.run(`
-    CREATE TABLE IF NOT EXISTS urls (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      original_url TEXT NOT NULL,
-      short_id TEXT NOT NULL UNIQUE
-    )
-  `);
-}).catch(err => {
-    console.error('Failed to initialize database', err);
-});
-app.use(routes_1.default);
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+(0, database_1.connectToDatabase)().then(() => {
+    console.log('Database is ready');
+    app.use('/', routes_1.default);
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}).catch((err) => {
+    console.error('Failed to initialize application due to database issues', err);
 });
