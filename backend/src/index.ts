@@ -1,12 +1,22 @@
 import express from 'express';
 import routes from './routes';
 import dbPromise from './database';
+import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5500;
+
+const corsOptions = {
+    origin: ['http://localhost:3001', 'https://url-shortener-sooty-nu-10.vercel.app'],
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+app.use(express.json());
 
 dbPromise.then(db => {
-  db.run(`
+    db.run(`
     CREATE TABLE IF NOT EXISTS urls (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       original_url TEXT NOT NULL,
@@ -14,11 +24,11 @@ dbPromise.then(db => {
     )
   `);
 }).catch(err => {
-  console.error('Failed to initialize database', err);
+    console.error('Failed to initialize database', err);
 });
 
 app.use(routes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
